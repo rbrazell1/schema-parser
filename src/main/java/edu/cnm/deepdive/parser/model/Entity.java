@@ -4,15 +4,18 @@ package edu.cnm.deepdive.parser.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Entity {
+
+  private static final String PLACEHOLDER = "${TABLE_NAME}";
 
   @Expose
   private String tableName;
 
   @Expose
   @SerializedName("createSql")
-  private String sqlsStatements;
+  private String sqlStatement;
 
   @Expose
   private List<Field> field;
@@ -21,7 +24,7 @@ public class Entity {
   private PrimaryKey primaryKey;
 
   @Expose
-  private List<Indices> indices;
+  private List<Index> indices;
 
   @Expose
   private List<ForeignKey> foreignKeys;
@@ -34,12 +37,12 @@ public class Entity {
     this.tableName = tableName;
   }
 
-  public String getSqlsStatements() {
-    return sqlsStatements;
+  public String getSqlStatement() {
+    return sqlStatement;
   }
 
-  public void setSqlsStatements(String sqlsStatements) {
-    this.sqlsStatements = sqlsStatements;
+  public void setSqlStatement(String sqlStatement) {
+    this.sqlStatement = sqlStatement;
   }
 
   public List<Field> getField() {
@@ -58,11 +61,11 @@ public class Entity {
     this.primaryKey = primaryKey;
   }
 
-  public List<Indices> getIndices() {
+  public List<Index> getIndices() {
     return indices;
   }
 
-  public void setIndices(List<Indices> indices) {
+  public void setIndices(List<Index> indices) {
     this.indices = indices;
   }
 
@@ -74,8 +77,15 @@ public class Entity {
     this.foreignKeys = foreignKeys;
   }
 
-  public List<String> getDdlStatements() {
-    return null; //TODO Implement as appropriate
+  public Stream<String> ddlStream() {
+    return Stream
+        .concat(
+            Stream.of(sqlStatement),
+            indices
+                .stream()
+                .map(Index::getSqlStatement)
+        )
+        .map((statement) -> statement.replace(PLACEHOLDER, tableName));
   }
 
 }

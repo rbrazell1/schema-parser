@@ -6,12 +6,15 @@ import java.io.IOException;
 
 public class Main {
 
+  private static final String STATEMENT_DELIMITER = ";\n";
+
   public static void main(String[] args) throws IOException {
 
     SchemaRepository repository = new SchemaRepository(System.in);
-    System.out.println("Read Schema from Standard in");
+    repository
+        .getSchema()
+        .ddlStream()
+        .map((statement) -> statement.concat(STATEMENT_DELIMITER))
+        .forEach(System.out::println);
   }
-
-
-
 }

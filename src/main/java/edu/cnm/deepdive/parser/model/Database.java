@@ -3,6 +3,7 @@ package edu.cnm.deepdive.parser.model;
 
 import com.google.gson.annotations.Expose;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Database {
 
@@ -61,8 +62,15 @@ public class Database {
     this.setupQueries = setupQueries;
   }
 
-  public List<String> getDdlStatements() {
-    return null; //TODO implement as appropriate
+  public Stream<String> ddlStream() {
+    return Stream
+        .concat(
+            entities
+                .stream()
+                .flatMap(Entity::ddlStream),
+            views
+                .stream()
+                .map(View::toDdl)
+        );
   }
-
 }
