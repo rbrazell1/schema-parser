@@ -1,0 +1,49 @@
+plugins {
+    id 'java'
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+group 'cnm.edu.deepdive'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    extraLibs
+}
+
+dependencies {
+
+    // Gson
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    // Junit test
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.7.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class' : 'edu.cnm.deepdive.parser.controller.Main'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.filter {
+            it.exists()
+        }.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
